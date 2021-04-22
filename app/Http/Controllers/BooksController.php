@@ -33,6 +33,7 @@ class BooksController extends Controller
             //Helper function para crear string de autores     
             $authorString = authorString($authors);
 
+            //Creando Array
             $data = [
                 'isbn' => $isbn,
                 'title' => $title,
@@ -40,6 +41,7 @@ class BooksController extends Controller
                 'cover' => $cover
             ];
 
+            //Guardando libro
             $book = Book::create($data);
             return response()->json(['Status' => 'Exito', $book]);
         }  
@@ -47,8 +49,10 @@ class BooksController extends Controller
 
     public function show($isbn)
     {
+        //Obteniendo libro con base en ISBN
         $book = Book::where('isbn', $isbn)->get();
         
+        //Determinado si el libro existe y crendo repuesta
         if (count($book) == 0) {
             $array = ['Libro' => 'Error Libro no encontrado'];
             $value = response()->xml($array);
@@ -61,12 +65,15 @@ class BooksController extends Controller
 
     public function destroy($isbn)
     {
+        //Obteniendo libro con base en ISBN
         $book = Book::where('isbn', $isbn)->delete();
 
+        //Determinado si el libro existe y crendo repuesta
         if ($book == 0) {
             $value = response()->json(['Status' => 'Libro no existe']);
         }
         else {
+            //Determinando si se uso API o interfaz de usuario
             if (strpos(url()->previous(), 'list') == true) {
                 $value = redirect('/list');
             }
