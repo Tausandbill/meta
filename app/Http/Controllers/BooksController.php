@@ -45,9 +45,18 @@ class BooksController extends Controller
         }  
     }
 
-    public function show(Book $isbn)
+    public function show($isbn)
     {
-        return response()->xml(['book' => $isbn->toArray()]);
+        $book = Book::where('isbn', $isbn)->get();
+        
+        if (count($book) == 0) {
+            $array = ['Libro' => 'Error Libro no encontrado'];
+            $value = response()->xml($array);
+        } else {
+            $value = response()->xml(['Libro' => $book[0]->toArray()]);
+        }
+
+        return $value;
     }
 
     public function destroy($isbn)
@@ -55,16 +64,18 @@ class BooksController extends Controller
         $book = Book::where('isbn', $isbn)->delete();
 
         if ($book == 0) {
-            return response()->json(['Status' => 'Libro no existe']);
+            $value = response()->json(['Status' => 'Libro no existe']);
         }
         else {
             if (strpos(url()->previous(), 'list') == true) {
-                return redirect('/list');
+                $value = redirect('/list');
             }
             else {
-                return response()->json(['Status' => 'Exito']);
+                $value = response()->json(['Status' => 'Exito']);
             }            
-        }        
+        }  
+        
+        return $value;
     }
 
     public function list()
